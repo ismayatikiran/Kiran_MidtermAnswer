@@ -149,15 +149,15 @@ public class ConnectDB {
         return data;
     }
 
-    public void insertDataFromArrayListToMySql(List<Student> list, String tableName, String columnName)
+    public void insertDataFromArrayListToMySql(ArrayList<String> list, String tableName, String columnName)
     {
         try {
             connectToMySql();
             ps = connect.prepareStatement("DROP TABLE IF EXISTS `"+tableName+"`;");
             ps.executeUpdate();
-            ps = connect.prepareStatement("CREATE TABLE `"+tableName+"` (`ID` int(11) NOT NULL AUTO_INCREMENT,`SortingNumbers` bigint(20) DEFAULT NULL,  PRIMARY KEY (`ID`) );");
+            ps = connect.prepareStatement("CREATE TABLE `"+tableName+"` (`name` varChar(10) DEFAULT NULL);");
             ps.executeUpdate();
-            for(Student st:list){
+            for(String st:list){
                 ps = connect.prepareStatement("INSERT INTO "+tableName+" ( "+columnName+" ) VALUES(?)");
                 ps.setObject(1,st);
                 ps.executeUpdate();
@@ -247,10 +247,10 @@ public class ConnectDB {
     {
         try {
             connectToMySql();
-                ps = connect.prepareStatement("INSERT INTO "+tableName+" ( " + columnName1 + "," + columnName2 + " ) VALUES(?,?)");
-                ps.setString(1,"Ankita Sing");
-                ps.setInt(2,3590);
-                ps.executeUpdate();
+            ps = connect.prepareStatement("INSERT INTO "+tableName+" ( " + columnName1 + "," + columnName2 + " ) VALUES(?,?)");
+            ps.setString(1,"Ankita Sing");
+            ps.setInt(2,3590);
+            ps.executeUpdate();
 
 
         } catch (IOException e) {
@@ -266,28 +266,28 @@ public class ConnectDB {
         List<User> list = new ArrayList<>();
         User user = null;
         try{
-        Connection conn = connectToMySql();
-        String query = "SELECT * FROM profile";
-        // create the java statement
-        Statement st = conn.createStatement();
-        // execute the query, and get a java resultset
-        ResultSet rs = st.executeQuery(query);
-        // iterate through the java resultset
-        while (rs.next())
-        {
-            String name = rs.getString("name");
-            int id = rs.getInt("id");
-            //System.out.format("%s, %s\n", name, id);
-            user = new User(name,id);
-            list.add(user);
+            Connection conn = connectToMySql();
+            String query = "SELECT * FROM profile";
+            // create the java statement
+            Statement st = conn.createStatement();
+            // execute the query, and get a java resultset
+            ResultSet rs = st.executeQuery(query);
+            // iterate through the java resultset
+            while (rs.next())
+            {
+                String name = rs.getString("name");
+                int id = rs.getInt("id");
+                //System.out.format("%s, %s\n", name, id);
+                user = new User(name,id);
+                list.add(user);
 
+            }
+            st.close();
+        }catch (Exception e){
+            System.err.println("Got an exception! ");
+            System.err.println(e.getMessage());
         }
-        st.close();
-       }catch (Exception e){
-           System.err.println("Got an exception! ");
-           System.err.println(e.getMessage());
-         }
-       return list;
+        return list;
     }
 
     public static void main(String[] args)throws IOException, SQLException, ClassNotFoundException {
@@ -302,6 +302,23 @@ public class ConnectDB {
         List<User> user = readFromMongoDB();
         */
 
+    }
+
+    public void insertNewDataFromMapToMySql(List<String> departments,String tableName, String columnName)
+    {
+        try {
+            connectToMySql();
+            ps = connect.prepareStatement("INSERT INTO "+tableName+" ( "+columnName+" ) VALUES(?)");
+            ps.setString(1, String.valueOf(departments));
+
+            ps.executeUpdate();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
     }
 
 }
